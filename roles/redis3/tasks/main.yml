@@ -1,0 +1,22 @@
+---
+- name: install rpm packed
+  yum: pkg={{item}} state=present
+  with_items:
+    - tcl
+    
+- name: mkdir /data dir
+  shell: mkdir -p /data/redis/{logs,conf,rdata}
+
+- name: unarchive redis file
+  unarchive: src={{redis_version3}} dest=/data
+
+- name: install redis {{redis_version3}}
+  shell: cd /data/redis-3.2.5 && make && make install
+
+- name: copy redis start file
+  copy: src=redis dest=/etc/init.d/redis mode=0755
+
+- name: copy redis config file
+  template: src=redis.conf.j2 dest=/data/redis/conf/redis.conf
+  notify:
+    - restart redis

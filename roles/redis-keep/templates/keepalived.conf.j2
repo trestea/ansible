@@ -1,0 +1,38 @@
+! Configuration File for keepalived
+
+global_defs {
+   router_id {{redis_router_id}}
+}
+
+vrrp_script {{redis_vrrp_script}} {
+    script "{{scripts_dir}}/redis_check.sh"
+    interval 2
+    weight -5
+    fail 2
+    }
+vrrp_instance {{redis_vrrp_instance}} {
+    state {{keepalived_role}}
+    interface eth0
+    unicast_peer {
+        {{peer_ip}}
+      }
+    nopreempt
+    virtual_router_id 22
+    priority {{keepalived_priority}}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{redis_auth_pass}}
+    }
+track_script {
+    {{redis_vrrp_script}}
+    }
+    virtual_ipaddress {
+        {{keepalived_vip}} dev eth0
+    }
+
+    notify_master /etc/keepalived/scripts/redis_master.sh
+    notify_backup /etc/keepalived/scripts/redis_backup.sh
+    notify_fault  /etc/keepalived/scripts/redis_fault.sh
+    notify_stop   /etc/keepalived/scripts/redis_stop.sh
+}

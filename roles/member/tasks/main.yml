@@ -1,0 +1,30 @@
+---
+  - name: copy member-web
+    copy: src=member-web.war dest=/data/tomcat2/webapps/member-web.war owner=app group=app
+    register: file_status
+
+  - name: stop and rm  member-web 
+    shell: /usr/local/bin/tomde 2 rm member-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+    when: file_status.changed == true
+
+  - name: start member-web
+    shell: nohup /usr/local/bin/tomde 2 restart &
+    tags: restart
+    
+  - action: uri url=http://127.0.0.1:8082/member-web/healthCheck return_content=yes
+    register: httpcode
+    until: httpcode.status == 200
+    retries: 3
+    delay: 15
+    ignore_errors: yes
+    tags: restart
+
+  - name: rollback
+    shell: /usr/local/bin/tomde 2 rm && mv {{ file_status['backup_file'] }} member-web.war
+    notify: restart tomcat
+    when: httpcode.status != 200
+    register: rollback_status
+
+  - name: backup member-web
+    shell: cd /data/tomcat2/webapps && mv {{ file_status['backup_file'] }} /data/rollback/`date "+%Y%m%d"`/member-web_`date "+%H%M%S"`.war && echo /data/rollback/`date "+%Y%m%d"`/member-web_`date "+%H%M%S"`.war > /data/rollback/member.txt
+    when: rollback_status.changed == false and file_status.changed == true

@@ -1,0 +1,11 @@
+---
+- name: Update docker config file
+  template: src=docker.j2 dest=/etc/sysconfig/docker
+  notify:
+      - restart docker
+
+- name: Create /root/.docker directory
+  file: path=/root/.docker state=directory mode=700
+
+- name: Write the docker config.json to /root/.docker
+  template: src=config.json.j2 dest=/root/.docker/config.json mode=0600

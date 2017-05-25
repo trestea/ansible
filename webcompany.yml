@@ -1,0 +1,4 @@
+---
+- hosts: test_to_outside
+  roles:
+    - role: web-company

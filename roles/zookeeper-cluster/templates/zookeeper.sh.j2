@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ ! -d "/data/zookeeper" ];then
+   cd /data && tar -xf zookeeper-3.4.6.tar.gz && mv /data/zookeeper-3.4.6 /data/zookeeper
+else
+   rm -rf /data/zookeeper && cd /data && tar -xf zookeeper-3.4.6.tar.gz && mv /data/zookeeper-3.4.6 /data/zookeeper
+fi

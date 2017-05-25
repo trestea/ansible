@@ -1,0 +1,30 @@
+---
+- name: install sys-tools
+  tags: tools
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - dstat
+    - htop
+    - iftop
+    - lsof
+    - iotop
+    - iptraf
+    - openssl-devel
+    - make
+    - gcc
+    - gcc-c++
+    - tree
+    - autoconf
+    - automake
+    - zlib-devel
+    - python
+    - perl
+    - glibc
+    - unzip
+    - gzip
+    - crontabs
+    - curl
+    - tar
+    - wget
+    - python-pip
+    - python-devel

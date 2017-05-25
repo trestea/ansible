@@ -1,0 +1,34 @@
+scripts_dir: /etc/keepalived/scripts
+
+redis_router_id: zg_redis
+mysql_router_id: zg_mysql
+nginx_router_id: zg_nginx
+
+
+redis_vrrp_script: chk_redis
+mysql_vrrp_script: chk_mysql
+nginx_vrrp_script: chk_nginx
+
+redis_vrrp_instance: redis_ha
+mysql_vrrp_instance: mysql_ha
+nginx_vrrp_instance: nginx_ha
+
+redis_auth_pass: redis-keep
+mysql_auth_pass: mysql_keep
+nginx_auth_pass: nginx_keep
+
+peer_ip: "{% if ansible_default_ipv4.address == master_ip %}{{ groups['redis'][1] }}{% else %} {{ groups['redis'][0] }}{% endif %}"
+
+master_ip: "
+        {%- if load_balancers_list is defined -%}
+             {{load_balancers_list[0]}}
+        {%- else -%}
+              {{ groups['redis'][0] }}
+        {%- endif -%}
+"
+
+keepalived_vip: 172.17.93.9
+
+keepalived_role: "{% if ansible_default_ipv4.address == master_ip %}MASTER{% else %}BACKUP{% endif %}"
+
+keepalived_priority: "{%- if keepalived_role == 'MASTER' -%}103{%- else -%}99{%- endif -%}"

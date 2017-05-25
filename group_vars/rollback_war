@@ -1,0 +1,16 @@
+job_project: job
+job_dir: /data/tomcat1/webapps
+
+gateway_project: gateway
+gateway_dir: /data/tomcat1/webapps
+
+member_project: member
+member_dir: /data/tomcat2/webapps
+
+product_project: product
+product_dir: /data/tomcat4/webapps
+
+mobile_project: mobile
+mobile_dir: /data/tomcat1/webapps
+
+back_dir: /data/rollback

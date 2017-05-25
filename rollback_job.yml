@@ -1,0 +1,10 @@
+---
+- hosts: 172.16.51.15
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  vars_files:
+    - group_vars/rollback_war
+  roles:
+    - role: rollback_job

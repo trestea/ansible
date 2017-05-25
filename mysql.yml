@@ -1,0 +1,5 @@
+---
+- hosts: test_online
+  roles:
+    - role: jemalloc
+    - role: percona-server

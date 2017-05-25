@@ -1,0 +1,5 @@
+---
+- hosts: 192.168.199.53
+  roles:
+    - role: mesos-cluster
+      mesos_install_mode: "master-slave"

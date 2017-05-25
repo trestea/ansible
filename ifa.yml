@@ -1,0 +1,11 @@
+---
+- hosts: ifa
+  gather_facts: False
+  tasks:
+    - name: mkdir ifa
+      file: dest=/data/nginx/ifa.wanttreasure.com state=directory
+
+    - name: form jenkins to ifa.wanttreasure.com
+      synchronize: src=/data/jenkins/workspace/ifa.wanttreasure.com/ dest=/data/nginx/ifa.wanttreasure.com/ delete=yes checksum=yes
+    - name: reload nginx
+      service: name=nginx state=reloaded

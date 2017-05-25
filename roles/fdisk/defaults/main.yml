@@ -1,0 +1,4 @@
+---    
+disk: /dev/sdb
+partition: /dev/sdb1
+mountDir: /data

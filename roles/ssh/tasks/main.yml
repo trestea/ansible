@@ -1,0 +1,16 @@
+---
+- name: copy openssh
+  copy: src={{item.src}} dest={{item.dest}}
+  with_items:
+    - src: "openssh-7.4p1-1.x86_64.rpm"
+      dest: "/data/openssh-7.4p1-1.x86_64.rpm"
+    - src: "openssh-clients-7.4p1-1.x86_64.rpm"
+      dest: "/data/openssh-clients-7.4p1-1.x86_64.rpm"
+    - src: "openssh-server-7.4p1-1.x86_64.rpm"
+      dest: "/data/openssh-server-7.4p1-1.x86_64.rpm"
+- name: yum install
+  shell: yum install -y /data/openssh-* && rm -f /data/openssh-*
+- name: copy sshd_config
+  copy: src=sshd_config dest=/etc/ssh/sshd_config
+- name: restart sshd
+  shell: service sshd restart

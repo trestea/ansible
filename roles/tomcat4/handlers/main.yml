@@ -1,0 +1,13 @@
+---
+- name: restart tomcat1
+  shell: nohup /usr/local/bin/tomde 1 restart &
+  tags: tomcat_conf
+- name: restart tomcat2
+  shell: nohup /usr/local/bin/tomde 2 restart &
+  tags: tomcat_conf
+- name: restart tomcat3
+  shell: nohup /usr/local/bin/tomde 3 restart &
+  tags: tomcat_conf
+- name: restart tomcat4
+  shell: nohup /usr/local/bin/tomde 4 restart &
+  tags: tomcat_conf

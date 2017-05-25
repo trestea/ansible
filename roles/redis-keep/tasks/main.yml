@@ -1,0 +1,26 @@
+---
+- name: install rpm packed
+  yum: pkg={{item}} state=present
+  with_items:
+    - keepalived
+
+- name: new keepalived scripts dir
+  file: path={{scripts_dir}} state=directory
+
+- name: copy scripts file
+  template: src={{item.src}} dest={{item.dest}} mode=0755
+  with_items:
+    - src: "redis_check.sh.j2"
+      dest: "{{scripts_dir}}/redis_check.sh"
+    - src: "redis_master.sh.j2"
+      dest: "{{scripts_dir}}/redis_master.sh"
+    - src: "redis_backup.sh.j2"
+      dest: "{{scripts_dir}}/redis_backup.sh"
+    - src: "redis_stop.sh.j2"
+      dest: "{{scripts_dir}}/redis_stop.sh"
+    - src: "redis_fault.sh.j2"
+      dest: "{{scripts_dir}}/redis_fault.sh"
+
+- name: copy keepalived config file
+  template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  notify: restart keepalived

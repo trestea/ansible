@@ -1,0 +1,14 @@
+---
+- name: set hostname
+  hostname: name={{ env }}_{{ ansible_default_ipv4.address.split('.')[-1] }}
+  when: ansible_distribution_major_version == "6"
+
+- name: Change network files
+  shell: sed -i "s/HOSTNAME=.*/HOSTNAME={{ ansible_hostname }}/g" /etc/sysconfig/network
+
+- name: Change hosts file
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: Stop Iptables
+  service: name=iptables state=stopped  enabled=no
+  when: ansible_distribution_major_version == "6" 

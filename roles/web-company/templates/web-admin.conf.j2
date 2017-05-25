@@ -1,0 +1,11 @@
+Listen {{ port }}
+<VirtualHost {{ inventory_hostname }}:{{ port }}>
+    ServerName {{ domain }}
+    DocumentRoot {{ project_dir }}/{{ project }}
+    <Directory "{{ project_dir }}/{{ project }}">
+         Options FollowSymLinks
+         AllowOverride None
+         Order allow,deny
+         Allow From All
+    </Directory>
+</VirtualHost>

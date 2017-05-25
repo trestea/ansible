@@ -1,0 +1,21 @@
+---
+- name: copy nginx conf
+  template: src=nginx.conf.j2 dest=/data/nginx/conf/nginx.conf
+
+- name: copy disconf-static
+  unarchive: src=nginx_disconf.tar.gz dest=/data/nginx/html creates=disconf-web
+  notify: restart nginx
+
+- name: install disconf-tomcat
+  unarchive: src=disconf_tomcat.tar.gz dest=/data creates=tomcat1
+
+- name: copy tomde
+  copy: src=tomde dest=/usr/local/bin/tomde mode=755
+
+- name: copy disconf-tomcat conf
+  template: src={{ item }}  dest={{ disconf_conf }}{{ item }}
+  with_items:
+    - jdbc-mysql.properties
+    - redis-config.properties
+    - zoo.properties
+  notify: restart tomcat

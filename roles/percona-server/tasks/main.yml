@@ -1,0 +1,59 @@
+---
+- name: check mysql dir status
+  stat: path=/data/mysql
+  register: mysql_status
+
+- name: add user mysql
+  user: name=mysql shell=/sbin/nologin
+  when: mysql_status.stat.exists == false
+ 
+- name: yum install mysql dependent
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - gcc
+    - gcc-c++
+    - openssl-devel
+    - pcre-devel
+    - zlib-devel
+    - make
+    - cmake
+    - bison-devel
+    - ncurses-devel
+    - readline-devel
+    - libaio
+    - libaio-devel
+  when: mysql_status.stat.exists == false
+
+- name: copy percona-servce 5.6.34
+  unarchive: src=percona-server-5.6.34-79.1.tar.gz dest=/data
+  when: mysql_status.stat.exists == false
+
+- name: install mysql
+  shell: chown -R mysql.mysql /data/mysql && mv /data/mysql/mysql /etc/init.d/ && chmod 755 /etc/init.d/mysql
+  when: mysql_status.stat.exists == false
+
+- name: copy my.cnf
+  template: src=my.cnf-test.j2 dest=/data/mysql/my.cnf owner=mysql group=mysql
+  when: mysql_status.stat.exists == false
+
+- name: init mysql
+  shell: rm -rf /data/mysql/data/* && rm -rf /data/mysql/logs/* && /data/mysql/scripts/mysql_install_db --basedir=/data/mysql --datadir=/data/mysql/data --defaults-file=/data/mysql/my.cnf --user=mysql
+  when: mysql_status.stat.exists == false
+
+- name: start mysql
+  service: name=mysql  state=started enabled=yes
+  when: mysql_status.stat.exists == false
+
+- name: mysql bin link
+  file: src=/data/mysql/bin/{{ item }} dest=/usr/local/bin/{{ item }} state=link
+  with_items:
+    - mysql
+    - mysqlbinlog
+    - mysqladmin
+    - mysqldump
+    - mysqldumpslow
+  when: mysql_status.stat.exists == false
+
+- name: set mysql root password
+  shell: /data/mysql/bin/mysqladmin -u root password "hao123.com"
+  when: mysql_status.stat.exists == false

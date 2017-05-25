@@ -1,0 +1,16 @@
+---
+mesosphere_rpm_url: http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-3.noarch.rpm
+zookeeper_peers_nodes: "
+	{%- if zookeeper_peers is defined -%}
+            {% for host in zookeeper_peers %}{{host}}:{{zookeeper_client_port}}{% if not loop.last %},{% endif %}{% endfor %}
+	{%- else -%}
+            {%- for host in groups['zookeeper'] -%}{{ host }}:{{zookeeper_client_port}}{% if not loop.last %},{% endif %}{% endfor %} 
+	{%- endif -%}"
+marathon_hostname: "{{ ansible_default_ipv4.address }}"
+marathon_framework_name: "marathon"
+marathon_port: '8080'
+marathon_master_peers: "zk://{{ zookeeper_peers_nodes }}/mesos"
+marathon_zk_peers: "zk://{{ zookeeper_peers_nodes }}"
+marathon_env_java_opts: '-Xmx512m'
+marathon_env_vars:
+  - "JAVA_OPTS={{ marathon_env_java_opts }}"

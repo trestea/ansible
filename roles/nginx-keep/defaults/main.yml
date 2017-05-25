@@ -1,0 +1,25 @@
+scripts_dir: /etc/keepalived/scripts
+
+nginx_router_id: zg_nginx
+
+nginx_vrrp_script: chk_nginx
+
+nginx_vrrp_instance: nginx_ha
+
+nginx_auth_pass: nginx_keep
+
+peer_ip: "{% if ansible_default_ipv4.address == master_ip %}{{ groups['nginx'][1] }}{% else %} {{ groups['nginx'][0] }}{% endif %}"
+
+master_ip: "
+        {%- if load_balancers_list is defined -%}
+             {{load_balancers_list[0]}}
+        {%- else -%}
+              {{ groups['nginx'][0] }}
+        {%- endif -%}
+"
+
+keepalived_vip: 172.17.93.9
+
+keepalived_role: "{% if ansible_default_ipv4.address == master_ip %}MASTER{% else %}BACKUP{% endif %}"
+
+keepalived_priority: "{%- if keepalived_role == 'MASTER' -%}103{%- else -%}99{%- endif -%}"

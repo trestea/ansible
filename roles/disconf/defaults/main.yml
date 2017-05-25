@@ -1,0 +1,7 @@
+mysql: disconf_mysql.wangcai.local
+user: disconf
+password: disconf
+redis_ip: disconf_redis.wangcai.local
+redis_port: 6379
+zookeeper: disconf_zookeeper.wangcai.local
+disconf_conf: /data/tomcat1/webapps/disconf-web/WEB-INF/classes/

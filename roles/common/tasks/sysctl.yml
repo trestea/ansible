@@ -1,0 +1,9 @@
+---
+- name: copy sysctl
+  copy: src=sysctl.conf dest=/etc/sysctl.conf
+  when: 
+    - ansible_hostname != "monitor"
+- name: sysctl effective
+  shell: sysctl -p
+
+

@@ -1,0 +1,23 @@
+---
+- hosts: {{project}}
+  gather_facts: False
+  become: yes
+  become_user: app
+  tasks:
+    - name: stop
+      shell: /usr/local/bin/tomde 4 rm
+
+    - name: copy {{project}}
+      shell: cp `cat /data/rollback/product.txt` {{ project_dir }}/product-web.war 
+      register: status
+
+    - name: start
+      shell: nohup /usr/local/bin/tomde 4 restart &
+      when: status.changed == true
+
+    - action: uri url=http://127.0.0.1:8084/product-web/healthCheck return_content=yes
+      register: httpcode
+      until: httpcode.status == 200
+      retries: 3
+      delay: 15
+      ignore_errors: yes

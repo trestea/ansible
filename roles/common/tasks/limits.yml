@@ -1,0 +1,6 @@
+---
+- name: copy limits file
+  copy: src=limits.conf dest=/etc/security/limits.conf
+- name: copy 90-nproc.conf
+  copy: src=90-nproc.conf  dest=/etc/security/limits.d/90-nproc.conf
+  when: ansible_distribution_major_version == "6"

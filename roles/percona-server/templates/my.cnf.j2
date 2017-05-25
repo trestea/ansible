@@ -1,0 +1,117 @@
+{% set memory=ansible_memtotal_mb/1024*3/4 %}
+{% set thread_concurrency=ansible_processor_count*2 %}
+[client]
+port     = 3306
+socket   = /data/mysql/sock/mysqld.sock
+###########basic##########
+[mysqld]
+server-id = {{master_server_id}}
+port      = {{port}}
+user      = {{user}}
+basedir   = /data/mysql
+datadir   = /data/mysql/data
+tmpdir    = /data/mysql/tmp
+socket    = /data/mysql/sock/mysqld.sock
+skip-external-locking
+skip-name-resolve
+default-storage-engine = INNODB
+character-set-server = utf8mb4
+wait_timeout = 600
+connect_timeout = 20
+interactive_timeout = 600
+back_log = 500
+event_scheduler = ON
+##lower_case_table
+lower_case_table_names=1
+explicit_defaults_for_timestamp=true
+
+#################thread pool#####################
+thread_handling=pool-of-threads
+thread_pool_max_threads=120
+thread_pool_size=50
+
+#############binlog############
+log-bin = /data/mysql/logs/mysql-bin
+binlog_format = row
+max_binlog_size = 512M
+binlog_cache_size = 2M
+expire-logs-days = 30
+#############replication########
+slave-net-timeout             = 10
+skip-slave-start
+log_slave_updates             = 1
+relay_log_recovery            = 1
+##############slow log##########
+slow_query_log  = 1
+slow_query_log_file = /data/mysql/logs/mysql.slow
+long_query_time = 1
+##############error log############
+log-error = /data/mysql/logs/error.log
+#############per_thread_buffers############
+max_connections = 3000
+max_user_connections = 2000
+key_buffer_size = 128M
+max_allowed_packet = 4M
+table_definition_cache = 1024
+table_open_cache = 1024
+table_open_cache_instances = {{ ansible_processor_count }}
+sort_buffer_size = 16M
+read_buffer_size = 16M
+read_rnd_buffer_size = 16M
+join_buffer_size = 256K
+tmp_table_size = 64M
+max_heap_table_size = 32M
+query_cache_type = 0
+query_cache_size = 0
+bulk_insert_buffer_size = 16M
+thread_cache_size = 64
+thread_stack = 256K
+thread_concurrency= {{ thread_concurrency }}
+#######################innodb########################
+innodb_data_home_dir = /data/mysql/data
+innodb_log_group_home_dir = /data/mysql/logs
+innodb_data_file_path = ibdata1:1G:autoextend
+innodb_buffer_pool_size = {{ memory | round |int }}G
+innodb_buffer_pool_instances = {{ ansible_processor_count }}
+innodb_buffer_pool_load_at_startup = 1
+innodb_buffer_pool_dump_at_shutdown = 1
+innodb_log_file_size = 512M
+innodb_log_buffer_size = 16M
+innodb_log_files_in_group = 2
+innodb_flush_log_at_trx_commit = 2
+innodb_lock_wait_timeout = 10
+innodb_rollback_on_timeout = 1
+####回滚事务内所有的statements
+innodb_print_all_deadlocks = 1
+####打印死锁日志
+innodb_sync_spin_loops = 100
+innodb_max_dirty_pages_pct = 90
+innodb_thread_concurrency = 0
+innodb_thread_sleep_delay = 500
+innodb_file_io_threads = 4
+innodb_concurrency_tickets = 1000
+log_bin_trust_function_creators = 1
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = 1
+innodb_read_io_threads = {{ ansible_processor_count }}
+innodb_write_io_threads = {{ ansible_processor_count }}
+innodb_io_capacity = 4000
+#innodb_adaptive_checkpoint=keep_average
+innodb_file_format = Barracuda
+innodb_purge_threads = 4
+innodb_purge_batch_size = 20
+innodb_old_blocks_pct = 50
+innodb_change_buffering = all
+transaction_isolation = READ-COMMITTED
+
+[mysqldump]
+quick
+max_allowed_packet = 32M
+[mysql]
+no-auto-rehash
+default-character-set=utf8mb4
+[mysqlhotcopy]
+interactive-timeout
+[mysqld_safe]
+open-files-limit = 40000
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES

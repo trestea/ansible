@@ -1,0 +1,11 @@
+---
+- name: create /etc/marathon/conf
+  file: path=/etc/marathon/conf state=directory
+- name: copy marthon files
+  template: src={{item}}.j2 dest=/etc/marathon/conf/{{item}}
+  with_items:
+    - hostname
+    - master
+    - zk
+    - sysconfig
+  notify: restart matathon

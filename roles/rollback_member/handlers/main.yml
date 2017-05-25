@@ -1,0 +1,23 @@
+---
+- hosts: {{project}}
+  gather_facts: False
+  become: yes
+  become_user: app
+  tasks:
+    - name: stop {{project}}
+      shell: /usr/local/bin/tomde 2 rm
+
+    - name: copy {{project}}
+      shell: cp `cat /data/rollback/member.txt` {{ project_dir }}/member-web.war 
+      register: status
+
+    - name: start
+      shell: nohup /usr/local/bin/tomde 2 restart &
+      when: status.changed == true 
+
+    - action: uri url=http://127.0.0.1:8082/member-web/healthCheck return_content=yes
+      register: httpcode
+      until: httpcode.status == 200
+      retries: 3
+      delay: 15
+      ignore_errors: yes

@@ -1,0 +1,7 @@
+---
+- name: restart etcd
+  service: name=etcd state=restarted
+  when: started_etcd.changed == false
+ 
+- name: update etcd.conf
+  lineinfile: dest=/etc/etcd/etcd.conf regexp=^ETCD_INITIAL_CLUSTER_STATE="new" line=ETCD_INITIAL_CLUSTER_STATE="existing"

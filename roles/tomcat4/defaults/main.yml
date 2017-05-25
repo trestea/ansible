@@ -1,0 +1,9 @@
+apr_dir: /usr/local
+java_version_dir7: jdk1.7.0_80
+# where to unpack the java tar.gz
+java_install_dir: /usr/local/{{java_version_dir7}}
+tomcat_dir: /data
+instance: 4
+users: app
+group: app
+password: Zg@2016

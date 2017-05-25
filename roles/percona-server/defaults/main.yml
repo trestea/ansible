@@ -1,0 +1,8 @@
+master_server_id: 22
+port: 3306
+user: mysql
+basedir: /data/mysql
+datadir: /data/mysql/data
+tmpdir: /data/mysql/tmp
+socket: /data/mysql/sock/mysqld.sock
+logs: /data/mysql/logs

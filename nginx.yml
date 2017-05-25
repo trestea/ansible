@@ -1,0 +1,4 @@
+---
+- hosts: 172.16.51.16
+  roles:
+    - role: nginx

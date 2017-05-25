@@ -1,0 +1,4 @@
+---
+- name: restart tomcat1
+  shell: nohup /usr/local/bin/tomde 1 restart &
+  tags: tomcat_conf

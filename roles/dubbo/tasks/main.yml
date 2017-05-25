@@ -1,0 +1,12 @@
+---
+- name: mkdir dubbo
+  file: dest=/data/dubbo state=directory
+
+- name: install dubbo
+  unarchive: src=dubbo-monitor-simple-2.5.4.tar.gz dest=/data/dubbo creates=dubbo
+
+- name: copy conf files
+  template: src=dubbo.properties dest=/data/dubbo/conf/dubbo.properties
+
+- name: start dubbo
+  shell: /data/dubbo/bin/start.sh

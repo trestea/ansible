@@ -1,0 +1,10 @@
+---
+- name: copy mongodb config file
+  copy: src=mongo.conf dest={{mongodb_conf_dir}}/mongo.conf
+
+- name: cancel boot mongodb warnnig
+  shell: echo "never" > /sys/kernel/mm/transparent_hugepage/defrag && echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+
+- name: copy mongodb service file
+  copy: src=mongodb dest=/etc/init.d/mongodb mode=755
+  register: mongodb restart

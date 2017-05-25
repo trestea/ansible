@@ -1,0 +1,3 @@
+---
+- name: add-user and group
+  user: name={{nginx_user}} shell=/sbin/nologin

@@ -1,0 +1,7 @@
+---
+- hosts: test_ta
+  vars:
+    zookeeper: 127.0.0.1
+    dubbo_port: 8888
+  roles:
+    - role: dubbo

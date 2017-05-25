@@ -1,0 +1,39 @@
+---
+- name: add-user and group
+  user: name=zabbix shell=/sbin/nologin
+
+- name: check zabbix_agentd is or no install
+  stat: path=/data/zabbix
+  register: install_stat
+
+- name: unarchive abbix
+  unarchive: src=zabbix-3.0.5.tar.gz dest=/data creates=zabbix-3.0.5
+  when: install_stat.stat.exists == false
+
+- name: install zabbix_agentd
+  shell: cd /data/zabbix-3.0.5 && ./configure --prefix=/data/zabbix --enable-agent &&  make && make install
+
+- name: copy zabbix_agentd.conf file
+  copy: src=zabbix_agentd.conf dest=/data/zabbix/zabbix_agentd.conf
+
+- name: coyp service zabbix_agentd file
+  copy: src=zabbix_agentd dest=/etc/init.d/zabbix_agentd mode=755
+  notify: restart zabbix_agentd
+
+- name: judgment check_disk.py is exists
+  sate: path=/data/zabbix/scripts/check_disk.py
+  register: status
+- name: copy check_disk.py file
+  copy: src=check_disk.py dest=/data/zabbix/scripts/check_disk.py mode=700 owner=zabbix group=zabbix
+  when: status.stat.exists == false
+  notify: zabbix_agentd restart
+
+- name: judgment check_disk is exist
+  stat: path=/data/zabbix/scripts/check_disk.py
+  register: status
+
+- name: copy check_disk file
+  copy: src=check_disk.py dest=/data/zabbix/scripts/check_disk.py mode=700 owner=zabbix group=zabbix
+  when: status.stat.exists == false
+  notify: zabbix_agentd restart
+

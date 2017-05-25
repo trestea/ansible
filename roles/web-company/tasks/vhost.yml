@@ -1,0 +1,15 @@
+---
+- name: new {{ project }} 
+  file: path={{ project_dir }}/{{ project }} state=directory
+  tags: new
+
+- name: form jenkins to {{ project_dir }}/{{ project }}
+  synchronize: src=/data/jenkins/workspace/web-company/ dest=/var/www/html/{{ project }}/ checksum=yes
+
+- name: chown {{ project_dir }}/{{ project }}
+  shell: chown -R apache.apache {{ project_dir }}/{{ project }}
+
+- name: copy {{ project }} conf
+  template: src=web-admin.conf.j2 dest={{ config }}/{{ project }}.conf
+  notify: restart httpd
+  tags: deploy

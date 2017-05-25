@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec curl -s -L http://172.16.52.205:2379/v2/keys/coreos.com/network/config -XPUT -d value='{"Network": "{{ kube_overlay_ip }}/16", "Backend": {"Type": "vxlan"}}'

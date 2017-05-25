@@ -1,0 +1,5 @@
+---
+- name: yum install mesos repo
+  yum: name={{ mesosphere_rpm_url }} state=present
+- name: install mesos master
+  yum: name=mesos state=latest

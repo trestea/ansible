@@ -1,0 +1,5 @@
+---
+zookeeper_dir: /data/zookeeper
+zookeeper_conf_dir: /data/zookeeper/conf
+zookeeper_maxClientCnxns: 60
+zookeeper_client_port: 2181

@@ -1,0 +1,5 @@
+---
+- hosts: mesos_masters
+  roles:
+    - role: mesos-cluster
+      mesos_install_mode: "master-slave"

@@ -1,0 +1,20 @@
+---
+- hosts: ansible
+  roles:
+    - role: java
+    - role: tomcat
+  tasks:
+    - name: copy jenkins
+      copy: src=jenkins2.32.war dest=/data/tomcat1/webapps/jenkins.war
+
+    - name: mkdir jenkins home
+      file: dest=/data/jenkins state=directory
+
+    - name: source etc/profile
+      lineinfile: dest=/etc/profile regexp='^export JENKINS_HOME=*' line="export JENKINS_HOME=/data/jenkins" state=present
+
+    - name: profile
+      shell: source /etc/profile
+
+    - name: restart tomcat
+      shell: nohup /usr/local/bin/tomde 1 restart &

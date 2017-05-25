@@ -1,0 +1,13 @@
+---
+- name: copy crt
+  copy: src={{ item }} dest=/root/{{ item }}
+  with_items:
+    - www.crt
+    - www.key
+
+- name: copy proxy.conf
+  copy: src=proxy.conf dest=/data/nginx/conf/proxy.conf owner={{nginx_user}} group={{nginx_group}} mode=700
+
+- name: conf nginx config file
+  template: src=nginx.conf.j2 dest=/data/nginx/conf/nginx.conf owner={{nginx_user}} group={{nginx_group}} mode=700
+  notify: restart nginx

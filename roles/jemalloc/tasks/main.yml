@@ -1,0 +1,14 @@
+---
+- name: yum install rpm
+  yum: pkg={{item}} state=present
+  with_items:
+    - gcc
+    - gcc-c++
+    
+- name: copy jemalloc
+  unarchive: src=jemalloc-3.6.0.tar.bz2 dest=/data creates=jemalloc-3.6.0
+  register: file_status
+
+- name: install jemalloc
+  shell: cd /data/jemalloc-3.6.0 && ./configure && make && make install && echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf && /sbin/ldconfig
+  when: file_status.changed == true

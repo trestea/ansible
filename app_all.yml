@@ -1,0 +1,36 @@
+---
+- hosts: job
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: job
+- hosts: mobile
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: mobile
+- hosts: member
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: member
+- hosts: product
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: product
+- hosts: gateway
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: gateway

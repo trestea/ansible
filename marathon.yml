@@ -1,0 +1,4 @@
+---
+- hosts: marathon
+  roles:
+    - role: marathon

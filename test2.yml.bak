@@ -1,0 +1,126 @@
+---
+- hosts: test2_app
+  become: yes
+  become_user: app
+  tasks:
+      - name: copy job-web
+        copy: src=test2/job-web.war dest=/data/tomcat1/webapps/job-web.war backup=yes owner=app group=app
+        register: file_status
+
+      - name: stop and rm  job-web
+        shell: /usr/local/bin/tomde 1 rm job-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+        when: file_status.changed == true
+
+      - name: start job-web
+        shell: nohup /usr/local/bin/tomde 1 start &
+
+      - action: uri url=http://127.0.0.1:8081/job-web/healthCheck return_content=yes
+        register: httpcode
+        until: httpcode.status == 200
+        retries: 3
+        delay: 15
+        ignore_errors: yes
+
+      - name: rollback
+        shell: /usr/local/bin/tomde 1 rm job-web && mv {{ file_status['backup_file'] }} job-web.war
+        notify: restart tomcat1
+        when: httpcode.status != 200
+        register: rollback_status
+
+      - name: copy mobile-web
+        copy: src=test2/mobile-web.war dest=/data/tomcat2/webapps/mobile-web.war backup=yes owner=app group=app
+        register: file_status
+
+      - name: stop and rm  mobile-web 
+        shell: /usr/local/bin/tomde 2 rm mobile-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+        when: file_status.changed == true
+
+      - name: start mobile-web
+        shell: nohup /usr/local/bin/tomde 2 start &
+
+      - action: uri url=http://127.0.0.1:8082/mobile-web/healthCheck return_content=yes
+        register: httpcode
+        until: httpcode.status == 200
+        retries: 3
+        delay: 15
+        ignore_errors: yes
+
+      - name: rollback
+        shell: /usr/local/bin/tomde 2 rm mobile-web && mv {{ file_status['backup_file'] }} mobile-web.war
+        notify: restart tomcat2
+        when: httpcode.status != 200
+        register: rollback_status
+
+
+      - name: copy member-web
+        copy: src=test2/member-web.war dest=/data/tomcat3/webapps/member-web.war backup=yes owner=app group=app
+        register: file_status
+
+      - name: stop and rm  member-web 
+        shell: /usr/local/bin/tomde 3 rm member-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+        when: file_status.changed == true
+
+      - name: start member-web
+        shell: nohup /usr/local/bin/tomde 3 start &
+
+        
+      - action: uri url=http://127.0.0.1:8083/member-web/healthCheck return_content=yes
+        register: httpcode
+        until: httpcode.status == 200
+        retries: 3
+        delay: 15
+        ignore_errors: yes
+
+      - name: rollback
+        shell: /usr/local/bin/tomde 3 rm member-web && mv {{ file_status['backup_file'] }} member-web.war
+        notify: restart tomcat3
+        when: httpcode.status != 200
+        register: rollback_status
+
+      - name: copy gateway-web
+        copy: src=test2/gateway-web.war dest=/data/tomcat4/webapps/gateway-web.war backup=yes owner=app group=app
+        register: file_status
+
+      - name: stop and rm  gateway-web 
+        shell: /usr/local/bin/tomde 4 rm gateway-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+        when: file_status.changed == true
+
+      - name: start gateway-web
+        shell: nohup /usr/local/bin/tomde 4 start &
+        
+      - action: uri url=http://127.0.0.1:8084/gateway-web/healthCheck return_content=yes
+        register: httpcode
+        until: httpcode.status == 200
+        retries: 3
+        delay: 15
+        ignore_errors: yes
+
+      - name: rollback
+        shell: /usr/local/bin/tomde 4 rm gateway-web && mv {{ file_status['backup_file'] }} gateway-web.war
+        notify: restart tomcat
+        when: httpcode.status != 200
+        register: rollback_status
+
+      - name: copy product-web
+        copy: src=test2/product-web.war dest=/data/tomcat5/webapps/product-web.war backup=yes owner=app group=app
+        register: file_status
+
+      - name: stop and rm  product-web 
+        shell: /usr/local/bin/tomde 5 rm product-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+        when: file_status.changed == true
+
+      - name: start product-web
+        shell: nohup /usr/local/bin/tomde 5 start &
+        
+      - action: uri url=http://127.0.0.1:8085/product-web/healthCheck return_content=yes
+        register: httpcode
+        until: httpcode.status == 200
+        retries: 3
+        delay: 15
+        ignore_errors: yes
+
+      - name: rollback
+        shell: /usr/local/bin/tomde 5 rm gateway-web && mv {{ file_status['backup_file'] }} product-web.war
+        notify: restart tomcat
+        when: httpcode.status != 200
+        register: rollback_status

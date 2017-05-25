@@ -1,0 +1,77 @@
+[test]
+172.16.51.15 env=deve
+172.16.51.16 env=deve
+172.16.51.17 env=test
+172.16.51.18 env=test
+[test1]
+172.16.51.19 env=test
+172.16.51.20 env=test
+172.16.51.21 env=test
+172.16.51.22 env=test
+[deve]
+172.16.51.15 env=deve
+172.16.51.16 env=deve
+[mysql]
+172.16.51.24 env=test_mysql
+[test_to_outside]
+172.16.51.20
+[test_tomcat]
+172.16.51.17
+172.16.51.19
+172.16.51.21
+[test_data]
+172.16.51.18
+172.16.51.20
+172.16.51.22
+[svn]
+172.16.51.29 env=svn
+[ansible]
+172.16.51.41 env=ansible
+[chanpin_app]
+172.16.51.17
+[shuju_app]
+172.16.51.19
+[jijin_app]
+172.16.51.21
+[website]
+172.16.51.18
+172.16.51.20
+172.16.51.22
+[webadmin]
+172.16.51.16
+172.16.51.18
+172.16.51.20
+172.16.51.22
+[chanpin_nginx]
+172.16.51.18
+[shuju_nginx]
+172.16.51.20
+[jijin_nginx]
+172.16.51.22
+[deve_nginx]
+172.16.51.16
+[nginx:children]
+chanpin_nginx
+shuju_nginx
+deve_nginx
+jijin_nginx
+[ifa]
+172.16.51.18
+[python]
+172.16.51.40
+[test2_app]
+172.16.51.19
+[test1_app]
+172.16.51.17
+[test3_app]
+172.16.51.21
+[ops_deve]
+172.16.51.49 env=ops_deve
+[zr_env]
+172.16.51.26 env=zr_deve
+[backup]
+172.16.51.30 env=online-backup
+[test_online]
+172.16.51.40 env=test_online
+[harbor]
+172.16.51.14

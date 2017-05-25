@@ -1,0 +1,6 @@
+---
+- name: restart nginx
+  service: name=nginx state=restarted
+
+- name: restart tomcat
+  shell: nohup /usr/local/bin/tomde 1 restart &

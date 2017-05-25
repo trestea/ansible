@@ -1,0 +1,17 @@
+---
+- hosts: test_ta
+  roles:
+    - role: mongodb
+    - role: jemalloc
+    - role: redis3
+    - role: nginx
+    - role: lap
+    - role: java
+    - role: zookeeper
+
+- hosts: test_tomcat
+  vars:
+    disconf_env: test
+  roles:
+    - role: java
+    - role: tomcat6

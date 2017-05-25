@@ -1,0 +1,23 @@
+---
+- name: copy zookeeper3.4.6
+  unarchive: src=zookeeper-3.4.6.tar.gz dest=/data
+
+- name: rename zookeeper
+  shell: mv /data/zookeeper-3.4.6 /data/zookeeper && chmod -R 755 /data/zookeeper/
+
+- name: copy zookeeper service
+  copy: src=zookeeper dest=/etc/init.d/zookeeper mode=755
+
+- name: add source etc file
+  lineinfile: dest=/etc/profile regexp='^##ZOOKEEPER' line="##ZOOKEEPER" state=present
+
+- name: add source etc file
+  lineinfile: dest=/etc/profile regexp='^ZOOKEEPER_HOME=/data/zookeeper'  line="ZOOKEEPER_HOME=/data/zookeeper" state=present
+
+- name: add source etc file
+  lineinfile: dest=/etc/profile regexp='^export PATH=$PATH:$ZOOKEEPER_HOME/bin:$ZOOKEEPER_HOME/conf'  line="export PATH=$PATH:$ZOOKEEPER_HOME/bin:$ZOOKEEPER_HOME/conf" state=present
+
+- name: copy zoo.cfg
+  template: src=zoo.cfg.j2 dest=/data/zookeeper/conf/zoo.cfg
+  notify:
+    - restart zookeeper

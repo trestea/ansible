@@ -1,0 +1,11 @@
+Listen 9082
+<VirtualHost {{ inventory_hostname }}:9082>
+    ServerName test.wanttreasure.com
+    DocumentRoot /var/www/html/website
+    <Directory "/var/www/html/website">
+         Options FollowSymLinks
+         AllowOverride None
+         Order allow,deny
+         Allow From All
+    </Directory>
+</VirtualHost>

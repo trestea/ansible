@@ -1,0 +1,40 @@
+---
+- name: config tomcat1 server.xml
+  copy: src=server1.xml dest=/data/tomcat1/conf/server.xml
+  notify: restart tomcat1
+  tags: tomcat_conf
+
+- name: config tomcat2 server.xml
+  copy: src=server2.xml dest=/data/tomcat2/conf/server.xml
+  notify: restart tomcat2
+  tags: tomcat_conf
+
+- name: config tomcat3 server.xml
+  copy: src=server3.xml dest=/data/tomcat3/conf/server.xml 
+  notify: restart tomcat3
+  tags: tomcat_conf
+
+- name: config tomcat4 server.xml
+  copy: src=server4.xml dest=/data/tomcat4/conf/server.xml
+  notify: restart tomcat4
+  tags: tomcat_conf
+
+- name: config tomcat1 catalina
+  copy: src=catalina4.sh dest=/data/tomcat1/bin/catalina.sh
+  notify: restart tomcat1
+  tags: tomcat_conf
+
+- name: config tomcat2 catalina
+  copy: src=catalina4.sh dest=/data/tomcat2/bin/catalina.sh
+  notify: restart tomcat2
+  tags: tomcat_conf
+
+- name: config tomcat3 catalina
+  copy: src=catalina4.sh dest=/data/tomcat3/bin/catalina.sh
+  notify: restart tomcat3
+  tags: tomcat_conf
+  
+- name: config tomcat4 catalina
+  copy: src=catalina4.sh dest=/data/tomcat4/bin/catalina.sh
+  notify: restart tomcat4
+  tags: tomcat_conf

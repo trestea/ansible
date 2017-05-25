@@ -1,0 +1,4 @@
+---
+- name: add tomcat user
+  user: name={{users}} password={{ password | password_hash('sha512') }}
+  tags: user

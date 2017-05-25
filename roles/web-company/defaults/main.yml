@@ -1,0 +1,5 @@
+project: company
+domain: test2.wanttreasure.com
+project_dir: /var/www/html
+config: /etc/httpd/conf.d/
+port: 9083

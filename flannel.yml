@@ -1,0 +1,7 @@
+---
+- hosts: etcd[0]
+  roles:
+    - flannel-config
+- hosts: flannel
+  roles:
+    - flannel

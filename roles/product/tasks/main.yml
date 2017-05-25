@@ -1,0 +1,30 @@
+---
+  - name: copy product-web
+    copy: src=product-web.war dest=/data/tomcat4/webapps/product-web.war owner=app group=app
+    register: file_status
+
+  - name: stop and rm  product-web 
+    shell: /usr/local/bin/tomde 4 rm product-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+    when: file_status.changed == true
+
+  - name: start product-web
+    shell: nohup /usr/local/bin/tomde 4 restart &
+    tags: restart
+
+  - action: uri url=http://127.0.0.1:8084/product-web/healthCheck return_content=yes
+    register: httpcode
+    until: httpcode.status == 200
+    retries: 3
+    delay: 15
+    ignore_errors: yes
+    tags: restart
+
+  - name: rollback
+    shell: /usr/local/bin/tomde 4 rm && mv {{ file_status['backup_file'] }} product-web.war
+    notify: restart tomcat
+    when: httpcode.status != 200
+    register: rollback_status
+
+  - name: backup product-web
+    shell: cd /data/tomcat4/webapps && mv {{ file_status['backup_file'] }} /data/rollback/`date "+%Y%m%d"`/product-web_`date "+%H%M%S"`.war && echo /data/rollback/`date "+%Y%m%d"`/product-web_`date "+%H%M%S"`.war > /data/rollback/product.txt
+    when: rollback_status.changed == false and file_status.changed == true

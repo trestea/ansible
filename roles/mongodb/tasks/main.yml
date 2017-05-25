@@ -1,0 +1,16 @@
+---
+- name: copy mongodb install file
+  unarchive: src=mongodb-linux-x86_64-3.0.7.tgz dest=/data creates=mongodb-linux-x86_64-3.0.7
+
+- name: install mongodb
+  shell: chdir=/data mv mongodb-linux-x86_64-3.0.7 mongodb && mkdir -p ./mongodb/{mdata,mlog}
+
+- name: cancel boot mongodb warnnig
+  shell: echo "never" > /sys/kernel/mm/transparent_hugepage/defrag && echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+
+- name: copy mongodb config
+  copy: src=mongo.conf dest=/data/mongodb/mongo.conf
+
+- name: service mongodb
+  copy: src=mongodb dest=/etc/init.d/mongodb mode=755
+  notify: restart mongodb

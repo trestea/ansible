@@ -1,0 +1,18 @@
+---
+- name: install rpm packed
+  yum: pkg={{item}} state=present
+  with_items:
+    - keepalived
+
+- name: new keepalived scripts dir
+  file: path={{scripts_dir}} state=directory
+
+- name: copy scripts file
+  template: src={{item.src}} dest={{item.dest}} mode=0755
+  with_items:
+    - src: "nginx_check.sh.j2"
+      dest: "{{scripts_dir}}/nginx_check.sh"
+
+- name: copy keepalived config file
+  template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  notify: restart keepalived

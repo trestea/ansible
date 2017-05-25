@@ -1,0 +1,12 @@
+---
+- name: yum install
+  yum: name=libselinux-python state=latest
+
+- name: New Disk Partition
+  script: disk.sh "{{ disk }}"
+
+- name: New Disk Format(ext4)
+  shell: /sbin/mkfs.xfs {{ partition }}
+
+- name: New Disk Mount
+  mount: name="{{ mountDir }}" src="{{ partition }}" fstype=xfs state=mounted

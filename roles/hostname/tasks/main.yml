@@ -1,0 +1,10 @@
+---
+- name: set hostname
+  hostname: name=wc_bj_{{ application }}_{{ ansible_default_ipv4.address.split('.')[-1] }}
+# application 需在inventory文件下配置 application=tomcat
+
+- name: copy hosts file
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: edit /etc/sysconfig/network
+  lineinfile: dest=/etc/sysconfig/network regexp='^HOSTNAME=' line='HOSTNAME={{ansible_hostname}}'

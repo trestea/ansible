@@ -1,0 +1,5 @@
+---
+- include: hostname_iptables.yml
+- include: rsyslog.yaml
+- include: limits.yml
+- include: sysctl.yml

@@ -1,0 +1,7 @@
+---
+- name: Reload daemon
+  command: systemctl daemon-reload
+  when: ansible_service_mgr == 'systemd'
+
+- name: restart zookeeper
+  service: name=zookeeper state=restarted

@@ -1,0 +1,12 @@
+---
+- name: add syslog profile
+  lineinfile: dest=/etc/profile regexp='^export PROMPT_COMMAND=*' line="export PROMPT_COMMAND='{ msg=$(history 1 | { read x y; echo $y; });logger $(whoami) [`pwd`]"$msg"; }'"
+
+- name: add syslog profile
+  lineinfile: dest=/etc/profile regexp='^export HISTTIMEFORMAT=*' line="export HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S '" state=present 
+
+- name: rsyslog restart
+  service: name=rsyslog state=restarted enabled=yes
+
+- name: source profile
+  shell: source /etc/profile

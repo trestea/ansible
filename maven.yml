@@ -1,0 +1,11 @@
+---
+- hosts: ansible
+  tasks:
+    - name: copy maven files
+      unarchive: src=maven-3.3.1-src.tar.gz dest=/usr/local creates=maven-3.3.1
+
+    - name: add profile
+      lineinfile: dest=/etc/profile regexp='^export MAVEN_HOME=*' line="export MAVEN_HOME=/usr/local/maven-3.3.1" state=present
+
+    - name: source profile
+      shell: source /etc/profile

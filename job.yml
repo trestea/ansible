@@ -1,0 +1,8 @@
+---
+- hosts: job
+  gather_facts: False
+  become: yes
+  become_user: app
+  serial: 1
+  roles:
+    - role: job

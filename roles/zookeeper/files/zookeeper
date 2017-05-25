@@ -1,0 +1,12 @@
+#!/bin/bash
+#chkconfig:2345 20 90
+#description:zookeeper
+#processname:zookeeper
+source /etc/profile
+case $1 in
+          start) zkServer.sh start;;
+          stop)  zkServer.sh stop;;
+          status) zkServer.sh status;;
+          restart) zkServer.sh restart;;
+          *)  echo 'require start|stop|status|restart';;
+esac

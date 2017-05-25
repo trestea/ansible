@@ -1,0 +1,12 @@
+---
+- name: Install docker
+  yum: name=docker state=latest
+
+- name: Copy private docker registry
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - src: "{{ private_docker_registry }}"
+      dest: /etc/docker/certs.d
+
+- name: Update docker config file
+  template: src=docker.j2 dest=/etc/sysconfig/docker

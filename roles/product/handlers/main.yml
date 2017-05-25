@@ -1,0 +1,3 @@
+---
+- name: restart tomcat
+  shell: nohup /usr/local/bin/tomde 4 restart &

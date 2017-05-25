@@ -1,0 +1,34 @@
+---
+- name: install apr
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - apr-util-devel
+    - gcc
+    - gcc-c++
+    - openssl-devel
+    
+- name: upload or sync tomcat-native
+  unarchive: src=tomcat-native-1.1.33-src.tar.gz dest={{apr_dir}} creates=tomcat-native-1.1.33-src
+  tags: tomcat
+
+- name: copy install tomcat-native scripts
+  template: src=install_apr.sh.j2 dest={{apr_dir}}/tomcat-native-1.1.33-src/jni/native/install_apr.sh mode=755
+  tags: tomcat
+
+- name: install tomcat-natvie
+  shell: chdir={{apr_dir}}/tomcat-native-1.1.33-src/jni/native  ./install_apr.sh >> /dev/null
+  tags: tomcat
+
+- name: mkdir /data
+  file: path={{tomcat_dir}} state=directory
+  tags: tomcat
+
+- name: copy tomcat
+  unarchive: src=tomcat.tar.gz dest={{tomcat_dir}}
+  register: tomcat_status
+  tags: tomcat
+
+  
+- name: copy start tomcat scripts
+  copy: src=tomde dest=/usr/local/bin/tomde mode=755
+  tags: tomcat

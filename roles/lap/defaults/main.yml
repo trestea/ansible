@@ -1,0 +1,5 @@
+php_dir: /data
+init: /etc/init.d
+php_conf: /data/php/etc
+httpd_dir: /var/www/html
+port: 9080

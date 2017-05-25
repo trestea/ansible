@@ -1,0 +1,35 @@
+---
+- name: copy {{ java_version7 }}
+  unarchive: src={{java_version7}} dest={{java_install_dir}} creates={{java_install_dir}}/{{java_version_dir7}}
+
+- name: Add the JDK binaries to the system path (/etc/profile)
+  lineinfile: dest=/etc/profile regexp='^JAVA_HOME=/usr/local/{{java_version_dir7}}' line="JAVA_HOME=/usr/local/{{java_version_dir7}}" state=present
+  tags: jdk-7
+
+- name: Add the JDK binaries to the system path (/etc/profile)
+  lineinfile: dest=/etc/profile regexp='^CLASSPATH=.*JAVA_HOME.*' line="CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar" state=present
+  tags: jdk-7
+
+- name: Add the JDK binaries to the system path (/etc/profile)
+  lineinfile: dest=/etc/profile regexp='^PATH=.*JAVA_HOME.*' line="PATH=$PATH:$HOME/bin:$JAVA_HOME/bin" state=present
+  tags: jdk-7
+- name: Remove alternatives before we set them.
+  command: rm -f /var/lib/alternatives/{{ item }}
+  with_items:
+    - java
+    - javac
+    - javaws
+    - javah
+    - jar
+    - jps
+  tags: jdk-7
+- name: JDK | Inform the system where Oracle JDK is located
+  alternatives: name={{ item }} link=/usr/bin/{{ item }} path=/usr/local/{{java_version_dir7}}/bin/{{ item }}
+  with_items:
+    - java
+    - javac
+    - javaws
+    - javah
+    - jar
+    - jps
+  tags: jdk-7

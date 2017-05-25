@@ -1,0 +1,8 @@
+---
+- hosts: llll
+  gather_facts: False
+  vars:
+    disconf_deve_env: deve
+    disconf_test_env: test
+  roles:
+    - role: tomcat6

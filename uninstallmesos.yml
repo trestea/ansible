@@ -1,0 +1,11 @@
+---
+- hosts: mesos
+  tasks:
+    - name: stop mesos-slave
+      shell: service mesos-slave stop
+    - name: stop mesos-master
+      shell: service mesos-master stop
+    - name: delete mesos config files
+      shell: rm -rf /etc/default/mesos*
+    - name: delete mesos system files
+      shell: find / -name mesos | xargs rm -rf {}

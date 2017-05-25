@@ -1,0 +1,28 @@
+---
+  - name: copy mobile-web
+    copy: src=mobile-web.war dest=/data/tomcat1/webapps/mobile-web.war owner=app group=app
+    register: file_status
+
+  - name: stop and rm  mobile-web 
+    shell: /usr/local/bin/tomde 1 rm mobile-web && mkdir -p /data/rollback/`date "+%Y%m%d"`
+    when: file_status.changed == true
+
+  - name: start mobile-web
+    shell: nohup /usr/local/bin/tomde 1 restart &
+    tags: restart
+  - action: uri url=http://127.0.0.1:8081/mobile-web/healthCheck return_content=yes
+    register: httpcode
+    until: httpcode.status == 200
+    retries: 3
+    delay: 15
+    ignore_errors: yes
+    tags: restart
+  - name: rollback
+    shell: /usr/local/bin/tomde 1 rm mobile-web && mv {{ file_status['backup_file'] }} mobile-web.war
+    notify: restart tomcat
+    when: httpcode.status != 200
+    register: rollback_status
+
+  - name: backup mobile-web
+    shell: cd /data/tomcat1/webapps && mv {{ file_status['backup_file'] }} /data/rollback/`date "+%Y%m%d"`/mobile-web_`date "+%H%M%S"`.war && echo /data/rollback/`date "+%Y%m%d"`/mobile-web_`date "+%H%M%S"`.war > /data/rollback/mobile.txt
+    when: rollback_status.changed == false and file_status.changed == true

@@ -1,0 +1,28 @@
+---
+- name: zabbix is or not exists
+  stat: path=/data/zabbix
+  register: install_stat
+
+- name: add-user and group
+  user: name=zabbix shell=/sbin/nologin
+  when: install_stat.stat.exists == false
+
+- name: stop zabbix_agentd service
+  service: name=zabbix_agentd state=stoped
+  when: install_stat.stat.exists == true
+
+- name: unarchive abbix
+  unarchive: src=zabbix-3.0.5.tar.gz dest=/data
+  when: install_stat.stat.exists == false 
+
+- name: install zabbix_agentd
+  shell: cd /data/zabbix-3.0.5 && ./configure --prefix=/data/zabbix --enable-agent &&  make && make install
+  when: install_stat.stat.exists == false
+  
+- name: copy zabbix_agentd.conf file
+  template: src=zabbix_agentd.conf dest=/data/zabbix/zabbix_agentd.conf
+  when: install_stat.stat.exists == false
+
+- name: coyp service zabbix_agentd file
+  copy: src=zabbix_agentd dest=/etc/init.d/zabbix_agentd mode=755
+  notify: restart zabbix_agentd

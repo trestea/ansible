@@ -1,0 +1,4 @@
+nginx_user: nginx
+nginx_group: nginx
+worker_rlimit_nofile: 65535
+worker_connections: 65535

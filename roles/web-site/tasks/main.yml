@@ -1,0 +1,13 @@
+---
+- name: mkdir website
+  file: dest=/var/www/html/website state=directory
+
+- name: form jenkins to var/www/website
+  synchronize: src=/data/jenkins/workspace/web-site/ dest=/var/www/html/website/ delete=yes checksum=yes
+
+- name: chown var/www/website
+  file: path=/var/www/html/website owner=apache
+
+- name: copy website vhost conf
+  template: src=website.conf.j2 dest=/etc/httpd/conf.d/website.conf
+  notify: restart httpd

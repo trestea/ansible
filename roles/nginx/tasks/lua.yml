@@ -1,0 +1,21 @@
+---
+- name: install pkg
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - readline
+    - readline-devel
+
+- name: copy luajit
+  unarchive: src=LuaJIT-2.0.4.tar.gz dest=/data creates=LuaJIT-2.0.4
+
+- name: install luajit
+  shell: cd /data/LuaJIT-2.0.4 && make && make install 
+
+- name: LuaJIT link
+  file: src=/usr/local/lib/libluajit-5.1.so.2 dest=/lib64/libluajit-5.1.so.2 state=link
+
+- name: add environment variable
+  lineinfile: dest=/etc/profile regexp='LUAJIT_LIB=/usr/local/lib' line='export LUAJIT_LIB=/usr/local/lib' state=present
+
+- name: add environment variable
+  lineinfile: dest=/etc/profile regexp='LUAJIT_INC=/usr/local/include/luajit-2.0' line='export LUAJIT_INC=/usr/local/include/luajit-2.0' state=present

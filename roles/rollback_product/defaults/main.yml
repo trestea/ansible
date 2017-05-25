@@ -1,0 +1,3 @@
+project_dir: /data/tomcat1/webapps
+backup_dir: /data/rollback
+project: product

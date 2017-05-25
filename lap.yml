@@ -1,0 +1,4 @@
+---
+- hosts: 172.16.51.26
+  roles:
+    - role: lap

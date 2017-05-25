@@ -1,0 +1,28 @@
+---
+- hosts: job
+  gather_facts: False
+  become: yes
+  become_user: app
+  vars:
+    job_dir: /data/tomcat1/webapps
+  tasks:
+    - name: stop
+      shell: /usr/local/bin/tomde 1 rm
+      register: info
+    - name: disp
+      debug: msg={{ info }}
+    - name: copy job
+      shell: cp `cat /data/rollback/job.txt` {{ job_dir }}/job-web.war 
+      register: status
+    - name: disp2
+      debug: msg={{ status }}
+    - name: start
+      shell: nohup /usr/local/bin/tomde 1 start &
+      when: status.changed == true 
+
+    - action: uri url=http://127.0.0.1:8081/job-web/healthCheck return_content=yes
+      register: httpcode
+      until: httpcode.status == 200
+      retries: 3
+      delay: 15
+      ignore_errors: yes

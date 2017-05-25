@@ -1,0 +1,18 @@
+---
+- name: stop and rm {{ job_project }}
+  shell: /usr/local/bin/tomde 1 rm
+
+- name: copy {{ job_project }} package
+  shell: cp `cat {{ back_dir }}/job.txt` {{ job_dir }}/job-web.war
+  register: status
+
+- name: start
+  shell: nohup /usr/local/bin/tomde 1 restart &
+  when: status.changed == true
+
+- action: uri url=http://127.0.0.1:8081/job-web/healthCheck return_content=yes
+  register: httpcode
+  until: httpcode.status == 200
+  retries: 3
+  delay: 15
+  ignore_errors: yes

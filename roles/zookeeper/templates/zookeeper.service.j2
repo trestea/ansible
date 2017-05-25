@@ -1,0 +1,18 @@
+[Unit]
+Description=Apache ZooKeeper
+After=network.target
+ConditionPathExists=/data/zookeeper/conf/zoo.cfg
+
+[Service]
+Type=notify
+Environment="ZOOCFGDIR=/data/zookeeper/conf"
+Environment="ZOO_LOG_DIR=/data/zookeeper/logs"
+WorkingDirectory=/data/zookeeper
+ExecStart=/data/zookeeper/bin/zkServer.sh start
+Restart=on-failure
+RestartSec=20
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

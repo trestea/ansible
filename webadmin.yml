@@ -1,0 +1,4 @@
+---
+- hosts: webadmin
+  roles:
+    - role: web-admin

@@ -1,0 +1,33 @@
+! Configuration File for keepalived
+
+global_defs {
+   router_id {{nginx_router_id}}
+}
+
+vrrp_script {{nginx_vrrp_script}} {
+    script "{{scripts_dir}}/nginx_check.sh"
+    interval 2
+    weight -5
+    fail 2
+    }
+vrrp_instance {{nginx_vrrp_instance}} {
+    state {{keepalived_role}}
+    interface eth0
+    unicast_peer {
+        {{peer_ip}}
+      }
+    nopreempt
+    virtual_router_id 22
+    priority {{keepalived_priority}}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{nginx_auth_pass}}
+    }
+track_script {
+    {{nginx_vrrp_script}}
+    }
+    virtual_ipaddress {
+        {{keepalived_vip}} dev eth0
+    }
+}

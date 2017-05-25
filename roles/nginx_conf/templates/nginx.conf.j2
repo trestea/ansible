@@ -1,0 +1,141 @@
+user {{nginx_user}} {{nginx_group}};
+worker_processes  {{ ansible_processor_cores }};
+error_log  logs/error.log error;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+pid        logs/nginx.pid;
+worker_rlimit_nofile 204800;
+
+events {
+    use epoll;
+    worker_connections 204800  ;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    charset  utf-8;
+    log_format logstash_json '{"nginx_time": "$time_iso8601",'
+                         '"@version":"1",'
+                         '"remote_addr": "$remote_addr",'
+                         '"remote_user": "$remote_user",'
+                         '"body_bytes_sent": "$body_bytes_sent",'
+                         '"request_time": "$request_time",'
+                         '"status": "$status",'
+                         '"request": "$request",'
+                         '"request_method": "$request_method",'
+                         '"cookie": "$http_cookie",'
+                         '"http_referrer": "$http_referer",'
+                         '"body_bytes_sent":"$body_bytes_sent",'
+                         '"http_x_forwarded_for": "$http_x_forwarded_for",'
+                         '"http_user_agent": "$http_user_agent" }';
+
+    access_log  logs/access.log  logstash_json;
+    sendfile        on;
+    tcp_nopush     on;
+    client_header_buffer_size 32k;
+    large_client_header_buffers 4 32k;
+    client_max_body_size 8m;
+    client_body_buffer_size 512k;
+    server_names_hash_bucket_size 128;
+    server_tokens off;
+    gzip  on;
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    gzip_http_version 1.1;
+    gzip_comp_level 2;
+    gzip_types text/plain application/x-javascript text/css application/xml text/javascript;
+    gzip_vary on;
+    keepalive_timeout  60;
+
+    upstream mobile {
+        server 172.16.51.17:8082 weight=5 max_fails=2 fail_timeout=30s;
+        }
+    upstream web-admin {
+        server 172.16.51.18:9081;
+       }
+    upstream web-site {
+        server 172.16.51.18:9082;
+       }
+    server {
+        listen       80;
+        server_name  localhost;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        if ($request_method !~ POST|GET)
+           {
+              return 404;
+           }
+        if ($host ~ mail.wanttreasure.com)
+           {
+              rewrite ^ https://mail.wanttreasure.com;
+           }
+        if ($http_user_agent ~* "ApacheBench|Curl|Microsoft URL Control|Swiftbot|ZmEu|oBot|jaunty|Python-urllib|lightDeckReports Bot|YYSpider|Feedly|Apache-HttpAsyncClient|UniversalFeedParser|MJ12bot|heritrix|EasouSpider|Ezooms|WebBench|^$|wget|Scrapy/|iaskspider|libcurl/" )
+           {
+             return 403;
+           }
+        location ~* ^/mobile-web/.*$ {
+            proxy_pass      http://mobile;
+            include proxy.conf;
+            }
+        location / {
+            # root /data/nginx/zigeng;
+            # index index.html index.htm;
+            proxy_pass      http://web-site;
+        }
+        location ~* ^/admin/.*$ {
+            proxy_pass      http://web-admin;
+            include proxy.conf;
+            }
+        location ~* ^/php/.*$ {
+            proxy_pass      http://web-admin;
+            include proxy.conf;
+            }
+        location ~* ^/ueditor/.*$ {
+            proxy_pass      http://web-admin;
+            include proxy.conf;
+            }
+        location /nginxstatus {
+             stub_status on;
+             allow 10.19.192.38;
+             access_log off;
+             deny all;
+             }
+    }
+    server {
+         listen       80;
+        server_name locahost;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        location / {
+           root /data/nginx/ifa.wanttreasure.com;
+           index index.html index.htm;
+           }
+    }
+
+    server {
+        listen       443;
+        server_name test.wanttreasure.com
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        ssl_certificate /root/www.crt;
+        ssl_certificate_key /root/www.key;
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout 5m;
+        ssl                  on;
+        ssl_protocols       SSLv2 SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers         HIGH:!aNULL:!MD5;
+        location ~* ^/mobile-web/.*$ {
+            proxy_pass      http://mobile;
+            include proxy.conf;
+            }
+        location / {
+            proxy_pass      http://web-site;
+            include proxy.conf;
+     }
+   }
+}

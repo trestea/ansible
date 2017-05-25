@@ -1,0 +1,4 @@
+ETCD_NAME={{ ansible_hostname }}
+ETCD_DATA_DIR="/var/lib/etcd/{{ ansible_hostname }}.etcd"
+ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:4001"
+ETCD_ADVERTISE_CLIENT_URLS="http://{{ inventory_hostname }}:4001"

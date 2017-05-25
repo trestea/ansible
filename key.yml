@@ -1,0 +1,7 @@
+---
+- hosts: harbor
+  vars:
+    ansible_ssh_pass: "{{ lookup('file', '~/.rootpassword') }}"
+  tasks:
+    - name: push rsa public key to all machines
+      authorized_key: user=root key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

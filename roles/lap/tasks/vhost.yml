@@ -1,0 +1,61 @@
+---
+- name: copy php-7 file
+  copy: src=php-7.0.9.tar.gz dest={{php_dir}}/php-7.0.9.tar.gz
+  register: php_install
+  tags: install
+
+- name: copy install php  scripts
+  copy: src=php.sh dest={{php_dir}}/php.sh mode=0755
+  register: shell_status
+  tags: install
+
+- name: install php-7 scripts
+  shell: chdir={{php_dir}} ./php.sh
+  when: shell_status.changed == true and php_install.changed == true
+  tags: install
+
+- name: remove php-7 file
+  file: path={{ item }} state=absent
+  with_items:
+    - "/data/php-7.0.9"
+    - "/data/php-7.0.9.tar.gz"
+    - "/data/php.sh"
+  tags: install
+
+- name: copy httpd config files
+  template: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - src: "httpd.conf.j2"
+      dest: "/etc/httpd/conf/httpd.conf"
+    - src: "welcome.conf.j2"
+      dest: "/etc/httpd/conf.d/welcome.conf"
+  notify: restart httpd
+  tags:
+    - config
+    - install
+
+- name: copy php-7 config files
+  copy: src=php.tar.gz dest={{ php_dir }}/php.tar.gz mode=0755
+  register: php
+  tags:
+    - update
+    - install
+  
+- name: extract php-7
+  shell: chdir={{ php_dir }} tar xf php.tar.gz 
+  tags:
+    - update
+    - install
+
+- name: remove php-7 config
+  file: path=/data/php.tar.gz state=absent
+  tags:
+    - update
+    - install
+
+- name: copy php-fpm conf
+  copy: src=php-fpm dest={{ init }}/php-fpm  mode=0755 owner=apache group=apache
+  notify: restart php-fpm
+  tags: 
+    - config
+    - install

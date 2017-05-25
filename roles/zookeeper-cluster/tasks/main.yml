@@ -1,0 +1,25 @@
+---
+- name: copy zookeeper3.4.6
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - src: zookeeper-3.4.6.tar.gz
+      dest: /data
+- name: install zookeeper and set zookeeper shell
+  template: src=zookeeper.sh.j2 dest=/opt/zookeeper.sh mode=755
+- include: stop.yml
+- name: run zookeeper shell
+  command: /opt/zookeeper.sh
+- name: copy zoo.cfg
+  template: src=zoo.cfg.j2 dest="{{zookeeper_conf_dir}}/zoo.cfg"
+  notify:
+    - restart zookeeper
+- name: setup myid
+  template: src=myid.j2 dest="{{zookeeper_dir}}/zdata/myid"
+  notify:
+    - restart zookeeper
+- name: copy zookeeper service item
+  template: src=zookeeper.service.j2 dest=/usr/lib/systemd/system/zookeeper.service
+  notify:
+    - Reload daemon
+    - restart zookeeper
+- include: start.yml
